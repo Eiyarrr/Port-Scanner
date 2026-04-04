@@ -13,6 +13,7 @@ async def is_open(target, port, semaphore):
         except asyncio.TimeoutError:
             return False
         except OSError:
+            print(f"OSError {OSError} at port {port}")
             return False
 
 async def main():
