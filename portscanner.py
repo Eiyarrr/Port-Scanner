@@ -1,4 +1,5 @@
 import sys
+import socket
 import asyncio
 
 semaphore = asyncio.Semaphore(1000)
