@@ -16,7 +16,7 @@ async def is_open(target, port, semaphore):
             print(f"OSError {OSError} at port {port}")
             return False
 
-async def main():
+def parse_argv():
     if len(sys.argv) < 2 or len(sys.argv) > 3:
         print("Invalid number of arguments")
         sys.exit(-1)
@@ -35,6 +35,11 @@ async def main():
         except Exception:
             print("Failed to parse semaphore size!")
             sys.exit(-1)
+
+    return hostname, target, semaphore
+
+async def main():
+    hostname, target, semaphore = parse_argv()
 
     print("Target Hostname  " + hostname)
     print("Target IP        " + target)
