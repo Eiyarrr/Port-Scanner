@@ -21,18 +21,24 @@ async def main():
         print("Invalid number of arguments")
         sys.exit(-1)
 
+    hostname = sys.argv[1]
+    try: 
+        target = socket.gethostbyname(hostname)
+    except socket.gaierror:
+        print("Failed to parse hostname!")
+        sys.exit(-1)
+
     semaphore = asyncio.Semaphore(1000)
     if len(sys.argv) == 3:
         try:
             semaphore = asyncio.Semaphore(int(sys.argv[2]))
         except Exception:
-            print(f"Incorrect argument caused {Exception}!")
+            print("Failed to parse semaphore size!")
+            sys.exit(-1)
 
-    hostname = sys.argv[1]
-    target = socket.gethostbyname(hostname)
     print("Target Hostname  " + hostname)
     print("Target IP        " + target)
-    print("Semaphore Size   " + str(semaphore._value))
+    print("Semaphore Size   " + str(semaphore._value) + '\n')
 
     all_ports = [is_open(target, port, semaphore) for port in range(1, 65535)]
     results = await asyncio.gather(*all_ports)
@@ -41,4 +47,8 @@ async def main():
 
     print(f"Total open ports: {total_open}")
 
-asyncio.run(main())
+try:
+    asyncio.run(main())
+except KeyboardInterrupt:
+    print("\nKeyboardInterrupt occurred! Exiting program!")
+    sys.exit(1)
