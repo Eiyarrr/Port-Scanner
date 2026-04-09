@@ -1,6 +1,7 @@
 import sys
 import socket
 import asyncio
+import argparse
 
 
 async def is_open(target, port, semaphore):
@@ -20,31 +21,34 @@ async def is_open(target, port, semaphore):
             return False
 
 
-def parse_argv():
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
-        print("Invalid number of arguments")
-        sys.exit(-1)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "hostname",
+        help="Hostname / IP Address of target to scan the ports of",
+        type=str,
+    )
+    parser.add_argument(
+        "-sem",
+        help="Size of the semaphore to use when scanning (default = 1000)",
+        type=int,
+        default=1000,
+    )
+    args = parser.parse_args()
 
-    hostname = sys.argv[1]
     try:
-        target = socket.gethostbyname(hostname)
+        target = socket.gethostbyname(args.hostname)
     except socket.gaierror:
         print("Failed to parse hostname!")
         sys.exit(-1)
 
-    semaphore = asyncio.Semaphore(1000)
-    if len(sys.argv) == 3:
-        try:
-            semaphore = asyncio.Semaphore(int(sys.argv[2]))
-        except Exception:
-            print("Failed to parse semaphore size!")
-            sys.exit(-1)
+    semaphore = asyncio.Semaphore(args.sem)
 
-    return hostname, target, semaphore
+    return args.hostname, target, semaphore
 
 
 async def main():
-    hostname, target, semaphore = parse_argv()
+    hostname, target, semaphore = parse_args()
 
     print("Target Hostname  " + hostname)
     print("Target IP        " + target)
