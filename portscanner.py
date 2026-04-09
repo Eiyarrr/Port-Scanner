@@ -2,10 +2,13 @@ import sys
 import socket
 import asyncio
 
+
 async def is_open(target, port, semaphore):
     async with semaphore:
         try:
-            _, writer = await asyncio.wait_for(asyncio.open_connection(target, port), timeout = 1)
+            _, writer = await asyncio.wait_for(
+                asyncio.open_connection(target, port), timeout=1
+            )
             print(f"Port {port} is open")
             writer.close()
             await writer.wait_closed()
@@ -16,13 +19,14 @@ async def is_open(target, port, semaphore):
             print(f"OSError {OSError} at port {port}")
             return False
 
+
 def parse_argv():
     if len(sys.argv) < 2 or len(sys.argv) > 3:
         print("Invalid number of arguments")
         sys.exit(-1)
 
     hostname = sys.argv[1]
-    try: 
+    try:
         target = socket.gethostbyname(hostname)
     except socket.gaierror:
         print("Failed to parse hostname!")
@@ -38,19 +42,21 @@ def parse_argv():
 
     return hostname, target, semaphore
 
+
 async def main():
     hostname, target, semaphore = parse_argv()
 
     print("Target Hostname  " + hostname)
     print("Target IP        " + target)
-    print("Semaphore Size   " + str(semaphore._value) + '\n')
+    print("Semaphore Size   " + str(semaphore._value) + "\n")
 
     all_ports = [is_open(target, port, semaphore) for port in range(1, 65535)]
     results = await asyncio.gather(*all_ports)
-    
+
     total_open = sum(results)
 
     print(f"Total open ports: {total_open}")
+
 
 try:
     asyncio.run(main())
