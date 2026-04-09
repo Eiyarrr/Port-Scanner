@@ -29,7 +29,8 @@ def parse_args():
         type=str,
     )
     parser.add_argument(
-        "-sem",
+        "semaphore",
+        nargs="?",
         help="Size of the semaphore to use when scanning (default = 1000)",
         type=int,
         default=1000,
@@ -42,7 +43,7 @@ def parse_args():
         print("Failed to parse hostname!")
         sys.exit(-1)
 
-    semaphore = asyncio.Semaphore(args.sem)
+    semaphore = asyncio.Semaphore(args.semaphore)
 
     return args.hostname, target, semaphore
 
