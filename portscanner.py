@@ -21,7 +21,7 @@ async def is_open(target, port, semaphore):
             return False
 
 
-def parse_args():
+def parse_user_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "hostname",
@@ -49,7 +49,7 @@ def parse_args():
 
 
 async def main():
-    hostname, target, semaphore = parse_args()
+    hostname, target, semaphore = parse_user_args()
 
     print("Target Hostname  " + hostname)
     print("Target IP        " + target)
